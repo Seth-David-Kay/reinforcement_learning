@@ -1,8 +1,8 @@
 import lib # Importing my library file
 import random
 
-if __name__=="__main__":
-    # Init
+
+def rank_players_test(player_dict):
     nn_file_name = "neural_net.txt"
     board = lib.board()
     board.add_platforms()
@@ -18,10 +18,4 @@ if __name__=="__main__":
     # Neural net math
     nn = lib.neural_net(nn_file_name)
     nn.rank_players(player_dict)
-    # for _ in player_dict: print(f'final score: {player_dict[_].get("final_score")}, highest point: {player_dict[_].get("highest_point")}')
-    # new_player = lib.player(board)
-    # for _ in player_dict: print(player_dict[_].get("final_score"))
-    for player in player_dict:
-        nn.weigh_values(player_dict[player]["moves"], player_dict[player]["move_coords"], player_dict[player]["final_score"], nn_file_name, True)
-
-    # print(nn.get_best_move(new_player))
+    for _ in player_dict: print(f'final score: {player_dict[_].get("final_score")}, highest point: {player_dict[_].get("highest_point")}')

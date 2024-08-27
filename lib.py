@@ -267,38 +267,30 @@ class neural_net:
         best_move = 'u' # Just default to 'u', should always be overwritten
         x = player.x_coord
         y = player.y_coord
-        possible_move_indices = [0, 1, 2, 3, 4, 5] # One for each move_percentage position
         # Hash is (20 * y) + x for now
         move_percentages = self.net[(20 * y) + x]
-        # For now, just choose at random a move to give a chance,
-        # use it's weight to see if we should make it, if so
-        # make it, if not don't make it
-        # Run this 6 times, one for each of the possible moves
-        for i in range(5):
-            # The below line chooses a random int from 0-5 that is not in the checked_moves list
-            random_int = random.randint(0, len(possible_move_indices) - 1)
-            random_move = possible_move_indices[random_int]
-            percent_chance_of_move = move_percentages[random_move]
-            # See if we should take the move
-            move_chance = random.random()
-            if move_chance < percent_chance_of_move:
-                # Neural net 6 percentages line up with the above possible
-                # moves variable's ordering of the 6 possible moves
-                return possible_moves[random_move]
-            possible_move_indices.remove(random_move)
-        # If none of the above were chosen, there is one left in the possible moves not tested
-        # for, so let's give it a chance now and if it doesn't succeed, just get a random move
-        percent_chance_of_move = move_percentages[possible_move_indices[0]]
-        move_chance = random.random()
-        if move_chance < percent_chance_of_move:
-            return possible_moves[possible_move_indices[0]]
-        # Get a random move for now
+        # Chooses a rand float between 0 and all floats added together, then
+        # chooses the index at that rand float's range
+        index = random.uniform(0, sum(move_percentages))
+        if index > 0 and index < move_percentages[0]:
+            return possible_moves[0]
+        elif index > move_percentages[0] and index < move_percentages[0] + move_percentages[1]:
+            return possible_moves[1]
+        elif index > move_percentages[0] + move_percentages[1] and index < move_percentages[0] + move_percentages[1] + move_percentages[2]:
+            return possible_moves[2]
+        elif index > move_percentages[0] + move_percentages[1] + move_percentages[2] and index < move_percentages[0] + move_percentages[1] + move_percentages[2] + move_percentages[3]:
+            return possible_moves[3]
+        elif index > move_percentages[0] + move_percentages[1] + move_percentages[2] + move_percentages[3] and index < move_percentages[0] + move_percentages[1] + move_percentages[2] + move_percentages[3] + move_percentages[4]:
+            return possible_moves[4]
+        # Should always default to the next one but just to be sure puting the ranges and then a default completely random choosing
+        elif index > move_percentages[0] + move_percentages[1] + move_percentages[2] + move_percentages[3] + move_percentages[4] and index < move_percentages[0] + move_percentages[1] + move_percentages[2] + move_percentages[3] + move_percentages[4] + move_percentages[5]:
+            return possible_moves[5]
         # TODO: Later maybe change it to get the top move if no moves
         # were chosen
         return possible_moves[random.randint(0,5)]
 
     # TODO: make it have an asymptote at one and 0 : the closer a percentage gets, the slower it increases
-    def weigh_values(self, moves, move_coords, finishing_place_percent, file_name):
+    def weigh_values(self, moves, move_coords, finishing_place_percent, file_name, debug):
         moves_char_to_int = {"u":0, "d":1, "r":2, "l":3, "ur":4, "ul":5}
         for i in range(len(moves)):
             move_percentages = self.net[(20 * move_coords[i][1]) + move_coords[i][0]]
@@ -306,12 +298,22 @@ class neural_net:
             current_percentage = move_percentages[moves_char_to_int[moves[i]]]
             # Calculate how much to weigh the player and if it should be positive or negative given their finishing place
             # Can change to be finishing_place >= total_participants / 2 if not using finishing_place_percent
-            positive_negative = 1 if finishing_place_percent >= 100 / 2 else -1
+            # positive_negative = 1 if finishing_place_percent >= 100 / 2 else -1 # TODO: Making it right now that all values are positive,
+            # with lower rankings having just having less of an impact. This is incorrect and not sustainable, just using it for the moment
+            # to make review the outcome of my other algorithms. These values should be asymptotic and they should be able to be
+            # subtracted from as well. (My thoughts on the topic as of this moment.)
             # Formula for weight adjustment to be added to taken move
             #                                                 largest percent increase : 0.05%
             # We can also make this not 0.001 hard coded and instead make it based on the total number of participatns as an equation
-            percent_increase = abs(finishing_place_percent - 50) * 0.0001
-            weight_adjustment = positive_negative * percent_increase
+            # Abs just in case. At this stage in development we don't want any values to decrease.
+            # TODO: Removed the -50 after finishing_place_percent below because *I THINK* that average will just be 0%, at least that
+            # is what is happening in practice. And it makes sense because I use percent differences away from the average.
+            # TODO: When moving to a percentile ranking system using the percentile rank equation and idea, add the -50 back in
+            # so the bottom half of ranks will subtract, the average will have no impact, and the top half of ranks will add.
+            # Also make sure that the algorithm can incorporate subtraction at that point.
+            weight_adjustment = abs(finishing_place_percent) * 0.0001
+            if debug:
+                print(f"Weight Adjustment: {weight_adjustment} -> rank: {finishing_place_percent} -> move_coords: {move_coords[i]}")
             # Add adjustment to move percentage
             self.net[(20 * move_coords[i][1]) + move_coords[i][0]][moves_char_to_int[moves[i]]] += weight_adjustment
         self.write_net_to_file(file_name)
@@ -362,10 +364,8 @@ class neural_net:
             # Weighted averaging for the final score
             # Encorporate difference - average below so that 50% is average and 1% is good and 100% is bad
             final_score = 0.5 * highest_point_percent_difference + 0.3 * time_of_highest_point_percent_difference + 0.2 * final_height_percent_difference
-            # TODO: For now, just hard coding a 50% reduction or increase for each percentage to help centralize them
-            # TODO: Maybe this should come before the final_score and be applied to all of the percent differences
-            if final_score > 100: final_score -= 50
-            elif final_score < 100: final_score += 50
+            # TODO:It's okay for the rankings to be high or low, they can't be negative which is all I care about for the moment,
+            # just have to account for the large percentages later in the pipeline.
             # Add player and score to the return dict's player's dict
             player_dict[player]["final_score"] = final_score
 
