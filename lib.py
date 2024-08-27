@@ -226,6 +226,10 @@ class board:
     # the same area find it and use those values, else create the are
     # with default values and train it from there. Also hash the area
     # so we can find it without iteration if it exists.
+
+# TODO: make a function to write trained values to the nn instead of updating the nn file
+# every time a value needs to be updated -> abstract this functionality of saving the nn
+# to a method
 class neural_net:
     def __init__(self, file_name):
         self.net = []
