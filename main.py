@@ -45,6 +45,7 @@ def train_model_next_gen():
     nn.write_net_to_file(nn_file_name)
 
 def find_and_simulate_a_good_run():
+    nn_file_name = "neural_net.txt"
     board = lib.board()
     board.add_platforms()
     player_dict = {}
@@ -54,19 +55,36 @@ def find_and_simulate_a_good_run():
         highest_point, final_height, time_of_highest_point, move_coords = player.move_on_list(moves, False, board)
         player_dict[player] = {"highest_point": highest_point, "time_of_highest_point": time_of_highest_point, "final_height": final_height, "moves": moves, "move_coords": move_coords}
 
-    # Find the player that got the highest
+    # Rank the players WITHOUT weighing their values or writing any changes to the neural net to it's file
+    nn = lib.neural_net(nn_file_name)
+    nn.rank_players(player_dict)
+    # Find the player that got the best score
     highest_player = {"highest_point": -1}
+    highest_scorer = {"final_score": -1}
     for player in player_dict:
         if player_dict[player]["highest_point"] > highest_player["highest_point"]:
             highest_player = player_dict[player]
+        if player_dict[player]["final_score"] > highest_player["final_score"]:
+            highest_scorer = player_dict[player]
     simulations.guiish_simulate_run(highest_player["moves"])
     # Print out and write to moves_taken file important information
     print("Highest point: " + str(highest_player["highest_point"]))
     print("Time of highest point: " + str(highest_player["time_of_highest_point"]))
     print("Final height: " + str(highest_player["final_height"]))
+    print("Final score: " + str(highest_player["final_score"]))
+    print("Final score for the highest scorer: " + str(highest_scorer["final_score"]))
+    print("Highest point for the highest scorer: " + str(highest_scorer["highest_point"]))
     write_player = lib.player(board)
     write_player.write_moves_to_file(highest_player["moves"])
     write_player.write_move_coords_to_file(highest_player["move_coords"])
+
+# TODO: Add a training method that will train on the last generation's neural net (I guess by storing the
+# last gen neural net in it's own file), so I can train for specific amounts of time on a specific
+# generation before moving on
+
+# TODO TOP PRIORITY: There is an issue with weighing values, the process is still centered around
+# the average, so the highest scores are both the best and the worst. Correct this,
+# for the process I am using, the highest scores should ONLY be the best runs.
 
 if __name__=="__main__":
     # Init
@@ -75,8 +93,8 @@ if __name__=="__main__":
     # tests.best_moves_guiish()
     # tests.test_first_move()
     # tests.test_first_two_moves()
-    # find_and_simulate_a_good_run()
-    simulations.cli_input_simulate_run()
+    find_and_simulate_a_good_run()
+    # simulations.cli_input_simulate_run()
     print("All done")
 
 # TODO: Handle keyboard interrupts when training -- train in batches when training for large
