@@ -11,7 +11,7 @@ def train_model_it():
     player_dict = {}
     for i in range(100000):
         player = lib.player(board)
-        moves = player.get_rand_move_list(10)
+        moves = player.get_rand_move_list(100)
         highest_point, final_height, time_of_highest_point, move_coords = player.move_on_list(moves, False, board)
         player_dict[player] = {"highest_point": highest_point, "time_of_highest_point": time_of_highest_point, "final_height": final_height, "moves": moves, "move_coords": move_coords}
 
@@ -20,12 +20,39 @@ def train_model_it():
     nn.rank_players(player_dict)
     for player in player_dict:
         nn.weigh_values(player_dict[player]["moves"], player_dict[player]["move_coords"], player_dict[player]["final_score"], nn_file_name, False)
+    nn.write_net_to_file(nn_file_name)
+
+def train_model_next_gen():
+    # TODO: add a loading bar in terminal that goes up every time 100 new players or something get trained
+    nn_file_name = "neural_net.txt"
+    board = lib.board()
+    board.add_platforms()
+    player_dict = {}
+    for i in range(100000):
+        player = lib.player(board)
+        moves = player.get_gen_bets_moves(100)
+        highest_point, final_height, time_of_highest_point, move_coords = player.move_on_list(moves, False, board)
+        player_dict[player] = {"highest_point": highest_point, "time_of_highest_point": time_of_highest_point, "final_height": final_height, "moves": moves, "move_coords": move_coords}
+
+    # Neural net math
+    nn = lib.neural_net(nn_file_name)
+    nn.rank_players(player_dict)
+    for player in player_dict:
+        nn.weigh_values(player_dict[player]["moves"], player_dict[player]["move_coords"], player_dict[player]["final_score"], nn_file_name, False)
+    nn.write_net_to_file(nn_file_name)
 
 if __name__=="__main__":
     # Init
     # train_model_it()
+    # train_model_next_gen()
     tests.best_moves_guiish()
+    # tests.test_first_move()
+    # tests.test_first_two_moves()
     print("All done")
+
+# TODO: Handle keyboard interrupts when training -- train in batches when training for large
+# periods of time to support this (interting into file in regular intervals -- definitly not with every
+# change though)
 
 # TODO: There is some issue with generating the next best move - test if the random get next best move function
 # is working properly by measuring random outputs and seeing if they match percentage in neural net file

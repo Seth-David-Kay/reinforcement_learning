@@ -11,6 +11,25 @@ class player:
         # Init with board
         board.init_player(self)
 
+    # TODO: Make sure this method is as efficient as possible
+    def get_gen_bets_moves(self, num_moves):
+        # Create new nn object
+        nn_file_name = "neural_net.txt"
+        nn = neural_net(nn_file_name)
+        # Create a new board object
+        clean_board = board()
+        clean_board.add_platforms()
+        # Create a new player object
+        player_object = player(clean_board)
+        best_move_list = []
+        for i in range(num_moves):
+            # Find the best move
+            best_move = nn.get_best_move(player_object)
+            # Record the best move
+            best_move_list.append(best_move)
+            # Make the best move
+            player_object.make_one_move(best_move, True, clean_board)
+
     def get_rand_move_list(self, num_moves):
         possible_moves = ['u', 'd', 'r', 'l', 'ur', 'ul']
         random_moves = []
@@ -320,7 +339,6 @@ class neural_net:
                 print(f"Weight Adjustment: {weight_adjustment} -> rank: {finishing_place_percent} -> move_coords: {move_coords[i]}")
             # Add adjustment to move percentage
             self.net[(20 * move_coords[i][1]) + move_coords[i][0]][moves_char_to_int[moves[i]]] += weight_adjustment
-        self.write_net_to_file(file_name)
 
     def write_net_to_file(self, file_name):
         weights = self.net

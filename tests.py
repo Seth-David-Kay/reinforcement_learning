@@ -2,7 +2,6 @@ import lib # Importing my library file
 import random
 import time
 
-
 def rank_players_test(player_dict):
     nn_file_name = "neural_net.txt"
     board = lib.board()
@@ -40,3 +39,32 @@ def best_moves_guiish():
         # print((new_player.y_coord * 20) + new_player.x_coord)
         new_player.make_one_move(best_move, True, clean_board)
         clean_board.print_board_with_players()
+
+def test_first_move():
+    # See what the trained player does with a somewhat working gui
+    nn_file_name = "neural_net.txt"
+    nn = lib.neural_net(nn_file_name)
+    clean_board = lib.board()
+    clean_board.add_platforms()
+    chosen_best_move = []
+    for i in range(100):
+        new_player = lib.player(clean_board)
+        best_move = nn.get_best_move(new_player)
+        chosen_best_move.append(best_move)
+    print(chosen_best_move)
+
+def test_first_two_moves():
+    # See what the trained player does with a somewhat working gui
+    nn_file_name = "neural_net.txt"
+    nn = lib.neural_net(nn_file_name)
+    clean_board = lib.board()
+    clean_board.add_platforms()
+    chosen_best_move = []
+    for i in range(100):
+        new_player = lib.player(clean_board)
+        best_move = nn.get_best_move(new_player)
+        chosen_best_move.append(best_move)
+        new_player.make_one_move(best_move, True, clean_board)
+        best_move = nn.get_best_move(new_player)
+        chosen_best_move.append(best_move)
+    print(chosen_best_move)
