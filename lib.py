@@ -395,7 +395,7 @@ class neural_net:
             # advantage. This new algorithm will make the highest performers impact the most,
             # while the lowest ones impact the least. Balancing is required to make these
             # new equations work and not impact the nn values too much - the largest impact
-            # should be 22.3 , so uniformly adjust the values based off of that.
+            # should be 34.8 , so uniformly adjust the values based off of that.
             final_score = 0.5 * highest_point_percent_difference + 0.3 * time_of_highest_point_percent_difference + 0.2 * final_height_percent_difference
             # TODO:It's okay for the rankings to be high or low, they can't be negative which is all I care about for the moment,
             # just have to account for the large percentages later in the pipeline.
