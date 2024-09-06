@@ -28,7 +28,8 @@ class player:
             # Record the best move
             best_move_list.append(best_move)
             # Make the best move
-            player_object.make_one_move(best_move, True, clean_board)
+            player_object.make_one_move(best_move, False, clean_board)
+        return best_move_list
 
     def get_rand_move_list(self, num_moves):
         possible_moves = ['u', 'd', 'r', 'l', 'ur', 'ul']
@@ -162,16 +163,16 @@ class player:
         # If no errors,
         return True
 
-    def write_moves_to_file(self, moves, filename):
-        with open("moves_taken.txt", "a") as file:
+    def write_moves_to_file(self, moves, filename="moves_taken.txt"):
+        with open(filename, "a") as file:
             file.write('%s: ' %self.name)
             for move in moves:
                 file.write('| %s ' %move)
             file.write("|\n")
         file.close()
 
-    def write_move_coords_to_file(self, move_coords, filename):
-        with open("moves_taken.txt", "a") as file:
+    def write_move_coords_to_file(self, move_coords, filename="moves_taken.txt"):
+        with open(filename, "a") as file:
             file.write('%s: ' %self.name)
             for move_coord in move_coords:
                 file.write('| %s, %s ' % (move_coord[0], move_coord[1]))

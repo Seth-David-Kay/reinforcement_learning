@@ -1,5 +1,6 @@
 import lib # Importing my library file
 import tests # Importing my tests file
+import simulations # Importing my visualizations file
 import random
 
 # Which class should this go in? None? Probably none, right?
@@ -20,6 +21,7 @@ def train_model_it():
     nn.rank_players(player_dict)
     for player in player_dict:
         nn.weigh_values(player_dict[player]["moves"], player_dict[player]["move_coords"], player_dict[player]["final_score"], nn_file_name, False)
+    # Write the neural net to it's file
     nn.write_net_to_file(nn_file_name)
 
 def train_model_next_gen():
@@ -39,15 +41,42 @@ def train_model_next_gen():
     nn.rank_players(player_dict)
     for player in player_dict:
         nn.weigh_values(player_dict[player]["moves"], player_dict[player]["move_coords"], player_dict[player]["final_score"], nn_file_name, False)
+    # Write the neural net to it's file
     nn.write_net_to_file(nn_file_name)
+
+def find_and_simulate_a_good_run():
+    board = lib.board()
+    board.add_platforms()
+    player_dict = {}
+    for i in range(1000):
+        player = lib.player(board)
+        moves = player.get_gen_bets_moves(100)
+        highest_point, final_height, time_of_highest_point, move_coords = player.move_on_list(moves, False, board)
+        player_dict[player] = {"highest_point": highest_point, "time_of_highest_point": time_of_highest_point, "final_height": final_height, "moves": moves, "move_coords": move_coords}
+
+    # Find the player that got the highest
+    highest_player = {"highest_point": -1}
+    for player in player_dict:
+        if player_dict[player]["highest_point"] > highest_player["highest_point"]:
+            highest_player = player_dict[player]
+    simulations.guiish_simulate_run(highest_player["moves"])
+    # Print out and write to moves_taken file important information
+    print("Highest point: " + str(highest_player["highest_point"]))
+    print("Time of highest point: " + str(highest_player["time_of_highest_point"]))
+    print("Final height: " + str(highest_player["final_height"]))
+    write_player = lib.player(board)
+    write_player.write_moves_to_file(highest_player["moves"])
+    write_player.write_move_coords_to_file(highest_player["move_coords"])
 
 if __name__=="__main__":
     # Init
     # train_model_it()
     # train_model_next_gen()
-    tests.best_moves_guiish()
+    # tests.best_moves_guiish()
     # tests.test_first_move()
     # tests.test_first_two_moves()
+    # find_and_simulate_a_good_run()
+    simulations.cli_input_simulate_run()
     print("All done")
 
 # TODO: Handle keyboard interrupts when training -- train in batches when training for large
@@ -69,3 +98,5 @@ if __name__=="__main__":
 # it's not, after all essentially all make a single move method in lib is doing is making that move
 # and returning the new coords, which are fed back into getting the best move. So it's efficient, just
 # sub-par OOP design unless abstracted.
+
+# TODO: Add threading to make this faster! I mean, this computer should have a GPU after all

@@ -37,7 +37,7 @@ def best_moves_guiish():
         # print(nn.net[(20 * new_player.y_coord) + new_player.x_coord])
         print(best_move)
         # print((new_player.y_coord * 20) + new_player.x_coord)
-        new_player.make_one_move(best_move, True, clean_board)
+        new_player.make_one_move(best_move, False, clean_board)
         clean_board.print_board_with_players()
 
 def test_first_move():
@@ -64,7 +64,7 @@ def test_first_two_moves():
         new_player = lib.player(clean_board)
         best_move = nn.get_best_move(new_player)
         chosen_best_move.append(best_move)
-        new_player.make_one_move(best_move, True, clean_board)
+        new_player.make_one_move(best_move, False, clean_board)
         best_move = nn.get_best_move(new_player)
         chosen_best_move.append(best_move)
     print(chosen_best_move)
