@@ -59,24 +59,19 @@ def find_and_simulate_a_good_run():
     nn = lib.neural_net(nn_file_name)
     nn.rank_players(player_dict)
     # Find the player that got the best score
-    highest_player = {"highest_point": -1}
     highest_scorer = {"final_score": -1}
     for player in player_dict:
-        if player_dict[player]["highest_point"] > highest_player["highest_point"]:
-            highest_player = player_dict[player]
-        if player_dict[player]["final_score"] > highest_player["final_score"]:
+        if player_dict[player]["final_score"] > highest_scorer["final_score"]:
             highest_scorer = player_dict[player]
-    simulations.guiish_simulate_run(highest_player["moves"])
+    simulations.guiish_simulate_run(highest_scorer["moves"])
     # Print out and write to moves_taken file important information
-    print("Highest point: " + str(highest_player["highest_point"]))
-    print("Time of highest point: " + str(highest_player["time_of_highest_point"]))
-    print("Final height: " + str(highest_player["final_height"]))
-    print("Final score: " + str(highest_player["final_score"]))
-    print("Final score for the highest scorer: " + str(highest_scorer["final_score"]))
-    print("Highest point for the highest scorer: " + str(highest_scorer["highest_point"]))
+    print("Highest point: " + str(highest_scorer["highest_point"]))
+    print("Time of highest point: " + str(highest_scorer["time_of_highest_point"]))
+    print("Final height: " + str(highest_scorer["final_height"]))
+    print("Final score: " + str(highest_scorer["final_score"]))
     write_player = lib.player(board)
-    write_player.write_moves_to_file(highest_player["moves"])
-    write_player.write_move_coords_to_file(highest_player["move_coords"])
+    write_player.write_moves_to_file(highest_scorer["moves"])
+    write_player.write_move_coords_to_file(highest_scorer["move_coords"])
 
 # TODO: Add a training method that will train on the last generation's neural net (I guess by storing the
 # last gen neural net in it's own file), so I can train for specific amounts of time on a specific
