@@ -20,7 +20,7 @@ To get started with this project, follow these steps:
 2. Install the required dependencies.
 3. Run the initial training script to see the neural network learn a sample map.
 
-## Usage *needs updating*
+## Usage \*needs updating\*
 - Current flow:
   1. train_model_it()
   2. train_model_next_gen()
