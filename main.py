@@ -84,11 +84,11 @@ def find_and_simulate_a_good_run():
 if __name__=="__main__":
     # Init
     # train_model_it()
-    # train_model_next_gen()
+    train_model_next_gen()
     # tests.best_moves_guiish()
     # tests.test_first_move()
     # tests.test_first_two_moves()
-    find_and_simulate_a_good_run()
+    # find_and_simulate_a_good_run()
     # simulations.cli_input_simulate_run()
     print("All done")
 
