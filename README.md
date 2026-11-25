@@ -11,7 +11,6 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Screenshot](#screenshot)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Roadmap](#roadmap)
@@ -23,10 +22,8 @@
 
 Development of a neural network capable of learning and traversing 2D platform maps using reinforcement learning built completely from scratch (including all of the algorithms).
 
-## Screenshot
-
 <p align="center">
-  <img src="[README_SCREENSHOT.png]" alt="2D Buddy screenshot" width="800">
+  <img src="docs/screenshot.png" alt="2D Buddy screenshot" width="800">
 </p>
 
 ## Installation
