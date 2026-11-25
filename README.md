@@ -15,6 +15,7 @@
 - [Installation](#installation)
 - [Usage](#usage)
 - [Roadmap](#roadmap)
+- [License](#license)
 
 ---
 
@@ -50,3 +51,7 @@ Clone the repository
 - Currently working towareds a neural network that can regonize a new map and be able to traverse it on the first try.
   - Enhance generalization and adaptibility.
   - Enable adaptions to new map types/structures.
+
+## License
+
+Distributed under the GNU License. See [`LICENSE`](LICENSE) for details.
